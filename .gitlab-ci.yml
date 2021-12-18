@@ -1,0 +1,22 @@
+stages:
+  - build
+  - test
+
+minimum:
+  image: $TESTING_DOCKER_IMAGE
+  stage: build
+  script:
+    - curl -OLs ${TESTING_BASE_URL}/${TESTING_SECRET}/check_submission
+    - curl -OLs ${TESTING_BASE_URL}/${TESTING_SECRET}/assignment-testing.toml
+    - python3 check_submission assignment-testing.toml
+  artifacts:
+    expire_in: 1 week
+
+functional_test:
+  image: ${TESTING_DOCKER_IMAGE}
+  stage: test
+  script:
+    - curl -OLs ${TESTING_BASE_URL}/${TESTING_SECRET}/check_submission
+    - curl -OLs ${TESTING_BASE_URL}/${TESTING_SECRET}/assignment-testing.toml
+    - python3 check_submission assignment-testing.toml test
+  when:  manual
